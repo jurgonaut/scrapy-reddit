@@ -1,0 +1,2 @@
+scrapy>=1.8.0
+openpyxl>=3.0.0
