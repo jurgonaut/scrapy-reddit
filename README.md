@@ -11,7 +11,7 @@ this library: https://github.com/jurgonaut/simple-python-xlsx.git.
 - add the client id and secret in settings.py
 - add your reddit credentials in settings.py or with env variables
 - run the command "scrapy crawl reddit" while inside the project
-- check the results in pah XLSX_PATH (settings.py)
+- check the results in path XLSX_PATH (settings.py)
 
 ## Extending the script
 
