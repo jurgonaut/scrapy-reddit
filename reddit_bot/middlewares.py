@@ -41,7 +41,7 @@ class CookieMiddleware(object):
         if response.url == "https://www.reddit.com/api/v1/access_token":
             response_json = json.loads(response.text)
             if not response_json.get("access_token"):
-                spider.logger.error(f"Couldnt get access token, response: {response.text}")
+                spider.logger.error(f"Couldn't get access token, response: {response.text}")
                 raise RuntimeError()
             self.headers["Authorization"] = 'bearer ' + response_json['access_token']
 
