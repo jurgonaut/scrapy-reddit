@@ -1,4 +1,4 @@
 reddit_bot/settings.py
-reddit_bot/categories/categories.json
+**/categories.json
 **/__pycache__
 **/reddit_activities.csv
