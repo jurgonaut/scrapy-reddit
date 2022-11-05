@@ -7,73 +7,39 @@
 
 from scrapy.utils.project import get_project_settings
 
-from .xlsx_parser.xlsx_parser import XlsxParaser
-from pathlib import Path
+from reddit_bot.utils import parse_args
 import os
-import string
 from .items import RedditEntryItem
+import csv
 
-class XlsxPipeline(object):
-    def __init__(self): 
-        self.xlsx_parser = None
+class CSVPipeline(object):
+    def __init__(self):
+        self.oCSVFile = None
+        self.oCSVwriter = None
 
     def open_spider(self, spider):
         oSettings = get_project_settings()
+        aCsvPath = parse_args(oSettings, "CSV_PATH")
 
-        # Set the xlsx parser
-        oXlsx_path = self.resolve_path(oSettings.get("XLSX_PATH"))
+        try:
+            self.oCSVFile = open(aCsvPath, "a")
+        except Exception as e:
+            spider.logger.error(f"Couldn't open file {aCsvPath}")
+            raise
 
-        self.xlsx_parser = XlsxParaser(oXlsx_path)
-        self.xlsx_parser.open()
+        self.oCSVwriter = csv.writer(self.oCSVFile, delimiter=',', quotechar='"')
 
-        xSheets = self.xlsx_parser.get_sheets()
-
-        xActivities = oSettings.get("ACTIVITIES")
-        for aActivity in xActivities:
-            # Create the sheets if they are missing
-            if not aActivity in xSheets:
-                self.xlsx_parser.create_sheet(aActivity)
-
-            # If headers are found continue
-            if self.xlsx_parser.find_headers(aActivity):
-                continue
-
-            # Else create them
-            xHeaders = []
-            item = RedditEntryItem()
-            xColumns = list(string.ascii_uppercase) # Get alphabet letters in a list eg: ["A", "B", "C", "D", ...]
-            for nColumn, aKey in enumerate(item.fields):
-                xHeaders.append({"header": aKey, "index": xColumns[nColumn], "start": 1})
-
-            self.xlsx_parser.set_headers(xHeaders, aActivity)
+        self.oCSVFile.seek(0, os.SEEK_END)
+        if self.oCSVFile.tell():
+            self.oCSVFile.seek(0)
+        else:
+            spider.logger.error("CSV file is empty creating header")
+            oItemsFields = RedditEntryItem()
+            self.oCSVwriter.writerow(oItemsFields.get_fields_names())
 
     def close_spider(self, spider):
-        self.xlsx_parser.close()
+        self.oCSVFile.close()
 
     def process_item(self, item, spider):
-        xTo_insert = []
-        for oItem in item.items():
-            xTo_insert.append({"header": oItem[0], "data": oItem[1]})
-
-        self.xlsx_parser.append_rows(xTo_insert, aSheet_name = item["activity"], bAppend_if_none = False)
-
-        return item
-
-    def resolve_path(self, aPath):
-        if not aPath:
-            raise RuntimeError(f"XLSX_PATH: {aPath} not defined")
-
-        # Check if full path
-        if Path(aPath).is_file():
-            return Path(aPath)
-        
-        # Check if relative path
-        oCurrent_path = Path(os.path.realpath(__file__)).parent
-        if not aPath.startswith("/"):
-            aPath = "/" + aPath
-        
-        oPath = Path(f'{oCurrent_path}{aPath}')
-        if oPath.is_file():
-            return oPath
-        
-        raise RuntimeError(f"Couldnt find {aPath}")
+        spider.logger.debug(f"Scraped item: {item.get_values()}")
+        self.oCSVwriter.writerow(item.get_values())
