@@ -1,3 +1,2 @@
 reddit_bot/settings.py
-__init__.py
-__pycache__.py
+**/__pycache__
