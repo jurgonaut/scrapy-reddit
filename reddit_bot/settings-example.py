@@ -22,7 +22,6 @@ CONCURRENT_REQUESTS_PER_IP = 1
 DUPEFILTER_CLASS = "scrapy.dupefilters.BaseDupeFilter"
 
 ITEM_PIPELINES = {
-   #'reddit_bot.pipelines.XlsxPipeline': 100
    'reddit_bot.pipelines.CSVPipeline': 100
 }
 
