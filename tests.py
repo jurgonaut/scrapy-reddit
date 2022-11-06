@@ -2,6 +2,8 @@ import os
 import unittest
 from scrapy.http import Response, Request, TextResponse
 from reddit_bot.spiders.reddit_spider import RedditSpider
+from reddit_bot.categories import CategoriesManager
+from reddit_bot import settings
 
 class TestRedditBot(unittest.TestCase):
     def test_generate_request(self):
@@ -63,6 +65,34 @@ class TestRedditBot(unittest.TestCase):
             nI += 1
 
         # Todo: test when there are no new activities
+
+class TestCategoryManager(unittest.TestCase):
+    def test(self):
+        xSettingsCategories = ["upvoted"]
+
+        oCategoryManager = CategoriesManager()
+        oCategoryManager.read_categories("./reddit_bot/sample_data/categories.json", xSettingsCategories)
+
+        self.assertEqual(len(oCategoryManager.get_all_categories()), 1)
+        self.assertEqual(oCategoryManager.get_all_categories()[0].get_name(), "upvoted")
+
+        xSettingsCategories = ["upvoted", "saved"]
+        oCategoryManager = CategoriesManager()
+        oCategoryManager.read_categories("./reddit_bot/sample_data/categories.json", xSettingsCategories)
+
+        self.assertEqual(len(oCategoryManager.get_all_categories()), 2)
+        self.assertEqual(oCategoryManager.get_all_categories()[0].get_name(), "upvoted")
+        self.assertEqual(oCategoryManager.get_all_categories()[1].get_name(), "saved")
+
+        xSettingsCategories = ["upvoted"]
+        oCategoryManager = CategoriesManager()
+        oCategoryManager.read_categories("./reddit_bot/sample_data/categories-2.json", xSettingsCategories)
+
+        self.assertEqual(len(oCategoryManager.get_all_categories()), 1)
+        self.assertEqual(oCategoryManager.get_all_categories()[0].get_name(), "upvoted")
+
+        self.assertEqual(oCategoryManager.get_all_categories()[0].get_first_id(), "1234")
+        self.assertEqual(oCategoryManager.get_all_categories()[0].get_last_id(), "4321")
 
 def generate_spider():
     os.environ["REDDIT_APP_CLIENT_ID"] = "1234"
