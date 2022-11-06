@@ -1,0 +1,16 @@
+[
+    {
+        "name": "upvoted",
+        "status": {
+            "first_id": "1234",
+            "last_id": "4321"
+        }
+    },
+    {
+        "name": "saved",
+        "status": {
+            "first_id": "",
+            "last_id": ""
+        }
+    }
+]
