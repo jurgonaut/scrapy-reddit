@@ -7,10 +7,11 @@ class CategoriesManager():
     def __init__(self):
         self.xCategories = []
 
-    def read_categories(self, aPath, oSettings):
+    def read_categories(self, aPath, xSettingsCategories):
         xJsonCategories = []
 
         oPath = Path(aPath)
+        xJsonCategories = []
 
         if oPath.is_file():
             try:
@@ -20,17 +21,20 @@ class CategoriesManager():
             except Exception as e:
                 logging.error(f"Couldn't open file: {oPath}")
                 raise
-        else:
-            logging.info("Generating categories object")
-            for aCategory in oSettings.get("CATEGORIES"):
-                xJsonCategories.append({"name": aCategory})
 
-            logging.info("Creating categories file")
-            oPath.touch(exist_ok=True)
-
-        for oCategory in xJsonCategories:
+        for aCategory in xSettingsCategories:
             oNewCategory = Category()
-            oNewCategory.from_json(oCategory)
+            oNewCategory.set_name(aCategory)
+
+            for oJsonCategory in xJsonCategories:
+                if aCategory == oJsonCategory["name"] and oJsonCategory["status"]:
+                    aJsonCategoryFirstId = oJsonCategory["status"].get("first_id")
+                    oNewCategory.update_first_id(aJsonCategoryFirstId)
+
+                    aJsonCategoryLastId = oJsonCategory["status"].get("last_id")
+                    oNewCategory.update_last_id(aJsonCategoryLastId)
+                    break
+            
             self.xCategories.append(oNewCategory)
             
     def write_categories(self, aPath):
@@ -45,10 +49,11 @@ class CategoriesManager():
             logging.error(f"Couldn't write to CATEGORIES_PATH is spider_closed, exception: {e}")
 
     def get_category(self, aKey):
-        for oCategory in self.xCategories:
+        for oCategory in self.get_all_categories():
             if oCategory.get_name() == aKey:
                 return oCategory
-        raise RuntimeError(f"Category {aKey} not found")
+        return None
+        #raise RuntimeError(f"Category {aKey} not found")
 
     def get_all_categories(self):
         return self.xCategories

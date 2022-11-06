@@ -12,6 +12,9 @@ class Category():
     def get_name(self):
         return self.aName
 
+    def set_name(self, aName):
+        self.aName = aName
+
     def get_last_id(self):
         return self.aLastId
 
