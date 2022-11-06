@@ -37,7 +37,7 @@ class RedditSpider(scrapy.Spider):
         self.reddit_pass = parse_args(self.settings, "REDDIT_PASSWORD")
         self.categories_path = parse_args(self.settings, "CATEGORIES_PATH")
 
-        self.xCategories.read_categories(self.categories_path, self.settings)
+        self.xCategories.read_categories(self.categories_path, self.settings.get("CATEGORIES"))
 
     def spider_closed(self, spider):
         self.xCategories.write_categories(self.categories_path)
@@ -67,8 +67,8 @@ class RedditSpider(scrapy.Spider):
                 yield self.generate_request_activity(oCategory.get_name(), self.get_activities_old, aLast, None)
 
     def get_activities_new(self, response):
-        self.logger.info(f"Getting new activities before {response.meta['last']}")
         aKey = response.meta["key"]
+        self.logger.info(f"Getting new activities before {response.meta['last']}, from category {aKey}")
 
         xEntries = self.parse_response(response, aKey)
         if not xEntries:
@@ -88,8 +88,8 @@ class RedditSpider(scrapy.Spider):
         yield self.generate_request_activity(aKey, self.get_activities_new, None, aFirst)
 
     def get_activities_old(self, response):
-        self.logger.info(f"Getting old activities after {response.meta['last']}")
         aKey = response.meta["key"]
+        self.logger.info(f"Getting old activities after {response.meta['last']}, from category {aKey}")
 
         xEntries = self.parse_response(response, aKey)
         if not xEntries:
