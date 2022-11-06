@@ -53,7 +53,6 @@ class CategoriesManager():
             if oCategory.get_name() == aKey:
                 return oCategory
         return None
-        #raise RuntimeError(f"Category {aKey} not found")
 
     def get_all_categories(self):
         return self.xCategories
