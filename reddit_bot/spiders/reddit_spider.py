@@ -143,7 +143,7 @@ class RedditSpider(scrapy.Spider):
                 oEntry["title"] = ""
 
             if oData["data"].get("body"):
-                oEntry["body"] = oData["data"]["body"]
+                oEntry["body"] = oData["data"]["body"].replace("\n", " ")
             else:
                 oEntry["body"] = ""
 
