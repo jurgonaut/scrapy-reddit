@@ -2,3 +2,4 @@ reddit_bot/settings.py
 **/categories.json
 **/__pycache__
 **/reddit_activities.csv
+*.log
