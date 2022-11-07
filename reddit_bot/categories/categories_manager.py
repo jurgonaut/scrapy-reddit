@@ -22,6 +22,8 @@ class CategoriesManager():
                 logging.error(f"Couldn't open file: {oPath}")
                 raise
 
+        # Check if the categories in the JSON file are present and if so get the values 
+        # for first_id and last_id
         for aCategory in xSettingsCategories:
             oNewCategory = Category()
             oNewCategory.set_name(aCategory)
