@@ -163,7 +163,7 @@ class RedditSpider(scrapy.Spider):
             return
 
     def generate_request_activity(self, aKey, fCallback, aAfter = None, aBefore = None):
-        aUrl = f'https://oauth.reddit.com/user/{self.reddit_user}/{aKey}?limit=10'
+        aUrl = f'https://oauth.reddit.com/user/{self.reddit_user}/{aKey}?limit=100'
 
         aLastParsed = ""
         if aAfter:
